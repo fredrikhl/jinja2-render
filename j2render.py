@@ -3,19 +3,20 @@
 """ Render a Jinja2 template. """
 
 from __future__ import print_function, unicode_literals
-import os.path
+    
 import argparse
+import json
+import os.path
+import yaml
 from jinja2 import Environment, FileSystemLoader
 
 
 def load_yaml(filename):
-    import yaml
     with open(filename) as f:
         return yaml.load(f)
 
 
 def load_json(filename):
-    import json
     with open(filename) as f:
         return json.load(f)
 
@@ -31,12 +32,13 @@ def load_ctx(filename):
         'Unknown format {!r} for context file {!r}'.format(ext, filename))
 
 
-def render(filename, context={}, template_root=None):
+def render(filename, context=None, template_dirs=None):
     """ Render a file. """
+    context = context or dict()
+    template_dirs = list(template_dirs or [])
     filename = os.path.abspath(filename)
-    if template_root is None:
-        template_root = os.path.dirname(filename)
-    env = Environment(loader=FileSystemLoader(template_root))
+    template_dirs.append(os.path.dirname(filename))
+    env = Environment(loader=FileSystemLoader(template_dirs))
     template = env.get_template(os.path.basename(filename))
     return template.render(**context)
 
@@ -44,10 +46,17 @@ def render(filename, context={}, template_root=None):
 def main(args=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '--root',
-        help="Root directory for template files.")
+        '-d', '--dir',
+        dest='dirs',
+        action='append',
+        default=[],
+        metavar='DIR',
+        help="Add a template directory")
     parser.add_argument(
-        '--ctx', nargs='+', default=[],
+        '--ctx',
+        action='append',
+        default=[],
+        metavar='FILE',
         help="File(s) with context variables")
     parser.add_argument('template', help="Template file to render")
 
@@ -57,7 +66,7 @@ def main(args=None):
     for filename in args.ctx:
         context.update(load_ctx(filename))
 
-    print(render(args.template, context=context, template_root=args.root))
+    print(render(args.template, context=context, template_dirs=args.dirs))
 
 
 if __name__ == '__main__':
