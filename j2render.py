@@ -3,12 +3,13 @@
 """ Render a Jinja2 template. """
 
 from __future__ import print_function, unicode_literals
-    
+
 import argparse
 import json
 import os.path
 import yaml
 from jinja2 import Environment, FileSystemLoader
+from pkg_resources import get_distribution
 
 
 def load_yaml(filename):
@@ -58,6 +59,10 @@ def main(args=None):
         default=[],
         metavar='FILE',
         help="File(s) with context variables")
+    parser.add_argument(
+        '-v', '--version',
+        action='version',
+        version=str(get_distribution('j2render').version))
     parser.add_argument('template', help="Template file to render")
 
     args = parser.parse_args(args)
