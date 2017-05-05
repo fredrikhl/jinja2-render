@@ -1,0 +1,4 @@
+include requirements.txt
+include README.md
+include examples/*.yml
+include examples/*.j2
