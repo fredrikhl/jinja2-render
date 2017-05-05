@@ -1,3 +1,5 @@
+{% extends "base.j2" -%}
+{% block body -%}
 Hello,
 
 this example template attempts to render a template with two values, 'foo' and
@@ -5,4 +7,4 @@ this example template attempts to render a template with two values, 'foo' and
 
  - foo: {{ foo }}
  - bar: {{ bar }}
-
+{%- endblock -%}

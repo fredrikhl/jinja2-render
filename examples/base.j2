@@ -1,0 +1,6 @@
+{% set title = title | default('base template') -%}
+--- {{ title }} ---
+{% block body -%}
+This is the default template body!
+{%- endblock %}
+----{{ title | length * '-' }}----

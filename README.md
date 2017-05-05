@@ -20,10 +20,11 @@ optional arguments:
 ```
 
 
-## Example
+## Examples
 
 ```bash
-$ j2render.py --ctx example/foo.yml example/foo.j2
+$ j2render.py --ctx examples/foo.yml -s title mytitle examples/foo.j2
+--- mytitle ---
 Hello,
 
 this example template attempts to render a template with two values, 'foo' and
@@ -31,5 +32,19 @@ this example template attempts to render a template with two values, 'foo' and
 
  - foo: bar
  - bar: 4
+---------------
+```
 
+
+```bash
+$ cat examples/foo.j2 | j2render.py -d examples --ctx examples/foo.yml
+--- base template ---
+Hello,
+
+this example template attempts to render a template with two values, 'foo' and
+'bar':
+
+ - foo: bar
+ - bar: 4
+---------------------
 ```
