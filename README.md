@@ -1,22 +1,27 @@
 # jinja2-render
 
-Script to render Jinja2 templates
+Script to render simple Jinja2 templates.
+
+This tool was implemented to solve my own needs for testing Ansible templates.
 
 
 ## Usage
 
 ```
-usage: j2render.py [-h] [-d DIR] [--ctx FILE] template
+usage: j2render.py [-h] [-v] [-d DIR] [--ctx FILE] [-s name value] [template]
 
 Render a Jinja2 template.
 
 positional arguments:
-  template           Template file to render
+  template              Template file to render
 
 optional arguments:
-  -h, --help         show this help message and exit
-  -d DIR, --dir DIR  Add a template directory
-  --ctx FILE         File(s) with context variables
+  -h, --help            show this help message and exit
+  -v, --version         show program's version number and exit
+  -d DIR, --dir DIR     Add a template directory
+  --ctx FILE            File(s) with context variables
+  -s name value, --set name value
+                        Set context variable
 ```
 
 
@@ -48,3 +53,7 @@ this example template attempts to render a template with two values, 'foo' and
  - bar: 4
 ---------------------
 ```
+
+## TODO
+
+- Load custom filter modules?
