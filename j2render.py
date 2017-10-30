@@ -11,12 +11,14 @@ import signal
 import stat
 import sys
 from jinja2 import FileSystemLoader, Template
-from pkg_resources import get_distribution
+from pkg_resources import get_distribution, DistributionNotFound
 
 try:
-    VERSION = str(get_distribution('j2render').version)
-except:
-    VERSION = 'unknown'
+    __version__ = get_distribution('j2render').version
+except DistributionNotFound:
+    # TODO: Or `pass`, e.g. attribute is not set?
+    # TODO: Or dummy value, e.g. '0.0'
+    __version__ = None
 
 DEFAULT_ENCODING = 'utf-8'
 
@@ -71,10 +73,11 @@ def setup_logging(quiet=False, verbose=False):
 
 def make_parser():
     parser = argparse.ArgumentParser(description=__doc__)
+    # --version: should we include the `package_name`?
     parser.add_argument(
         '--version',
         action='version',
-        version=VERSION)
+        version=__version__)
     parser.add_argument(
         '-d', '--dir',
         dest='dirs',
