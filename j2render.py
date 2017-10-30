@@ -16,6 +16,8 @@ try:
 except:
     VERSION = 'unknown'
 
+DEFAULT_ENCODING = 'utf-8'
+
 
 def load_yaml(filename):
     import yaml
@@ -79,9 +81,12 @@ def make_parser():
         nargs=2,
         metavar=('name', 'value'),
         help="Set context variable")
+    parser.add_argument(
+        '-e', '--encoding',
+        default=None)
     parser.add_argument('template',
                         nargs='?',
-                        type=argparse.FileType('r'),
+                        type=argparse.FileType(mode='r'),
                         default=sys.stdin,
                         help="Template file to render")
     return parser
@@ -103,7 +108,8 @@ def main(args=None):
         if curdir not in args.dirs:
             args.dirs.append(curdir)
     template_loader = FileSystemLoader(args.dirs)
-    template = Template(args.template.read())
+    encoding = args.encoding or args.template.encoding or DEFAULT_ENCODING
+    template = Template(args.template.read().decode(encoding))
     template.environment.loader = template_loader
 
     print(render(template, context=context))
