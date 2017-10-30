@@ -7,6 +7,7 @@ from __future__ import print_function, unicode_literals
 import argparse
 import logging
 import os.path
+import signal
 import stat
 import sys
 from jinja2 import FileSystemLoader, Template
@@ -151,4 +152,6 @@ def main(args=None):
 
 
 if __name__ == '__main__':
+    # Kill silently if stdin, stdout, stderr is closed
+    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
     main()
