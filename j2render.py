@@ -5,6 +5,7 @@
 from __future__ import print_function, unicode_literals
 
 import argparse
+import logging
 import os.path
 import stat
 import sys
@@ -17,6 +18,10 @@ except:
     VERSION = 'unknown'
 
 DEFAULT_ENCODING = 'utf-8'
+
+LOGGER_FMT = '%(levelname)s %(message)s'
+
+logger = logging.getLogger(__name__)
 
 
 def load_yaml(filename):
@@ -53,10 +58,20 @@ def is_regular_file(stream):
     return stat.S_ISREG(os.fstat(stream.fileno())[stat.ST_MODE])
 
 
+def setup_logging(quiet=False, verbose=False):
+    level = logging.DEBUG if verbose else logging.WARNING
+    root = logging.getLogger()
+    if quiet:
+        root.addHandler(logging.NullHandler())
+    else:
+        logging.basicConfig(format=LOGGER_FMT)
+    root.setLevel(level)
+
+
 def make_parser():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '-v', '--version',
+        '--version',
         action='version',
         version=VERSION)
     parser.add_argument(
@@ -82,6 +97,16 @@ def make_parser():
         metavar=('name', 'value'),
         help="Set context variable")
     parser.add_argument(
+        '-v', '--verbose',
+        action='store_true',
+        default=False,
+        help="Get more verbose log output on stderr")
+    parser.add_argument(
+        '-q', '--quiet',
+        action='store_true',
+        default=False,
+        help="Suppress all log messages")
+    parser.add_argument(
         '-e', '--encoding',
         default=None)
     parser.add_argument('template',
@@ -95,6 +120,9 @@ def make_parser():
 def main(args=None):
     args = make_parser().parse_args(args)
 
+    setup_logging(quiet=args.quiet, verbose=args.verbose)
+    logger.debug("args: {0}".format(repr(args)))
+
     # Build context
     context = dict()
     for filename in args.ctx:
@@ -107,8 +135,15 @@ def main(args=None):
         curdir = os.path.abspath(os.path.dirname(args.template.name))
         if curdir not in args.dirs:
             args.dirs.append(curdir)
+
+    logger.info("template: {0}".format(repr(args.template.name)))
+
     template_loader = FileSystemLoader(args.dirs)
+    logger.info("paths: {0}".format(repr(args.dirs)))
+
     encoding = args.encoding or args.template.encoding or DEFAULT_ENCODING
+    logger.info("encoding: {0}".format(repr(encoding)))
+
     template = Template(args.template.read().decode(encoding))
     template.environment.loader = template_loader
 
