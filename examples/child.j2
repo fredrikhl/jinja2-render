@@ -1,0 +1,40 @@
+{% extends "parent.j2" %}
+{% import "macro.j2" as macros %}
+
+# child.j2 template
+
+Note that since this template extends another template, any content that is not
+inside a block gets omitted. This template can never really get rendered on its
+own, it needs the `parent.j2` template and a `macro.j2` template.
+
+{% block my_block -%}
+## child block
+
+This is the block `my_block` from `child.j2`. It overloads the content of
+`my_block` from `parent.j2`, and extends it a bit.
+
+First, we include the content from the parent block with a macro that prefixes
+each line:
+
+{{ macros.quote(super()) }}
+
+And then we add some text afterwards.
+{%- endblock %}
+
+## usage
+
+To render this template, run:
+
+```bash
+j2render.py examples/child.j2
+```
+
+That should automatically add `examples` as a template directory for looking up
+templates to extend or import.
+
+If you pass this template as standard input, you'll have to add the `examples`
+directory as template directory manually:
+
+```bash
+cat examples/child.j2 | j2render.py --dir examples
+```

@@ -1,0 +1,6 @@
+example_list:
+  - foo
+  - bar
+  - baz
+foo: foo
+bar: 0xa

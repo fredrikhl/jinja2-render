@@ -2,7 +2,16 @@
 
 Script to render simple Jinja2 templates.
 
-This tool was implemented to solve my own needs for testing Ansible templates.
+This tool was implemented to solve my own needs for testing configs generated
+from templates in Ansible.
+
+The idea is to build a YAML file with any context variables used in the
+template, and then simply render it to verify that it works as expected:
+
+```bash
+# j2render.py --ctx variables.yml nginx.conf.j2 > /etc/nginx/conf.d/test.conf
+# nginx -t -c test.conf
+```
 
 
 ## Usage
@@ -28,32 +37,24 @@ optional arguments:
 ## Examples
 
 ```bash
-$ j2render.py --ctx examples/foo.yml -s title mytitle examples/foo.j2
---- mytitle ---
-Hello,
-
-this example template attempts to render a template with two values, 'foo' and
-'bar':
-
- - foo: bar
- - bar: 4
----------------
+$ echo "foo='{{ foo }}'" | j2render.py --set foo "some value"
+foo='some value'
 ```
-
 
 ```bash
-$ cat examples/foo.j2 | j2render.py -d examples --ctx examples/foo.yml
---- base template ---
-Hello,
+$ j2render.py -s foo "my value" examples/simple.j2
+This is a simple template that just renders the value of two context variables,
+`foo' and `bar':
 
-this example template attempts to render a template with two values, 'foo' and
-'bar':
-
- - foo: bar
- - bar: 4
----------------------
+* foo: 'my value'
+* bar: Undefined
 ```
+
+```bash
+$ j2render --ctx examples/context.yml examples/list.md.j2 > list.md
+```
+
 
 ## TODO
 
-- Load custom filter modules?
+* Load custom filter modules?

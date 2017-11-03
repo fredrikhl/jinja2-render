@@ -1,0 +1,13 @@
+# Inheritance
+
+This is a simple Jinja2 template that defines a block. Other templates can
+inherit from this template and replace or extend this block definition.
+
+
+{% block my_block -%}
+## parent block
+
+This is some content within the block.
+{%- endblock %}
+
+This is the last line of the template 'parent.j2'.

@@ -1,0 +1,32 @@
+# Macros
+
+This file includes a few macro examples.
+
+We can include all kinds of stuff in this template file. As long as other
+templates just use the "import" keyword to fetch the macros defined here, it
+shouldn't have any side effects.
+
+
+## quote
+
+`quote(str, prefix="> ")` - Prefix each line of `str` with `prefix`.
+
+{% macro quote(str, prefix="> ") -%}
+{{ prefix }}{{ str.split("\n") | join("\n" + prefix) }}
+{%- endmacro %}
+
+
+### Tests
+
+Block quote:
+
+{{ quote("foo\nbar") }}
+
+Code comments:
+
+```python
+def add(a, b):
+    return a + b
+
+{{ quote("def exp(x, y):\n    return x**y", "# ") }}
+```

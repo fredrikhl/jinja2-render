@@ -1,0 +1,19 @@
+# List example template
+
+Let's output a markdown list with the contents from the context variable
+`example_list`:
+
+{% for list_item in example_list -%}
+* Item: {{ list_item }}
+{% else -%}
+The list is empty or undefined.
+{% endfor %}
+
+## Usage
+
+To get a list into `j2render.py`, use the `context.yml` file included in this
+folder:
+
+```bash
+j2render.py --ctx examples/context.yml examples/list.md.j2
+```
