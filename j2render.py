@@ -26,8 +26,6 @@ LOGGER_FMT = '%(levelname)s %(message)s'
 
 logger = logging.getLogger(__name__)
 
-ADDENV = False
-
 
 def load_yaml(filename):
     import yaml
