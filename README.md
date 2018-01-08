@@ -29,6 +29,8 @@ optional arguments:
   -v, --version         show program's version number and exit
   -d DIR, --dir DIR     Add a template directory
   --ctx FILE            File(s) with context variables
+  --env                 use OS env vars as setter for values before overriding
+                        with filed values
   -s name value, --set name value
                         Set context variable
 ```

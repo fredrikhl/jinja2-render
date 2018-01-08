@@ -26,6 +26,8 @@ LOGGER_FMT = '%(levelname)s %(message)s'
 
 logger = logging.getLogger(__name__)
 
+ADDENV = False
+
 
 def load_yaml(filename):
     import yaml
@@ -106,6 +108,11 @@ def make_parser():
         default=False,
         help="Get more verbose log output on stderr")
     parser.add_argument(
+        '--env',
+        action='store_true',
+        default=False,
+        help="use OS env vars as setter for values before overriding with filed values")
+    parser.add_argument(
         '-q', '--quiet',
         action='store_true',
         default=False,
@@ -129,6 +136,14 @@ def main(args=None):
 
     # Build context
     context = dict()
+
+    # if ---env is set build context from os.environ
+    # file context will override env
+    if args.env:
+        for envvar in os.environ:
+            context[envvar] = os.environ[envvar]
+
+    # build context from file
     for filename in args.ctx:
         context.update(load_ctx(filename))
     for key, value in args.assign:
