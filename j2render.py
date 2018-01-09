@@ -10,7 +10,7 @@ import os.path
 import signal
 import stat
 import sys
-from jinja2 import FileSystemLoader, Template
+from jinja2 import Environment, FileSystemLoader
 from pkg_resources import get_distribution, DistributionNotFound
 
 try:
@@ -48,12 +48,6 @@ def load_ctx(filename):
 
     raise NotImplementedError(
         'Unknown format {!r} for context file {!r}'.format(ext, filename))
-
-
-def render(template, context=None):
-    """ Render a file. """
-    context = context or {}
-    return template.render(**context)
 
 
 def is_regular_file(stream):
@@ -142,16 +136,16 @@ def main(args=None):
 
     logger.info("template: {0}".format(repr(args.template.name)))
 
-    template_loader = FileSystemLoader(args.dirs)
     logger.info("paths: {0}".format(repr(args.dirs)))
+    template_loader = FileSystemLoader(args.dirs)
 
     encoding = args.encoding or args.template.encoding or DEFAULT_ENCODING
     logger.info("encoding: {0}".format(repr(encoding)))
 
-    template = Template(args.template.read().decode(encoding))
-    template.environment.loader = template_loader
+    environment = Environment(loader=template_loader)
 
-    print(render(template, context=context))
+    template = environment.from_string(args.template.read().decode(encoding))
+    print(template.render(**context))
 
 
 if __name__ == '__main__':
