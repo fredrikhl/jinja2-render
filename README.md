@@ -17,7 +17,7 @@ template, and then simply render it to verify that it works as expected:
 ## Usage
 
 ```
-usage: j2render.py [-h] [-v] [-d DIR] [--ctx FILE] [-s name value] [template]
+usage: j2render.py [-h] [-v] [-d DIR] [--ctx FILE] [--filters FILE] [--env] [-s name value] [template]
 
 Render a Jinja2 template.
 
@@ -29,6 +29,7 @@ optional arguments:
   -v, --version         show program's version number and exit
   -d DIR, --dir DIR     Add a template directory
   --ctx FILE            File(s) with context variables
+  --filters FILE        File(s) with custom filters
   --env                 use OS env vars as setter for values before overriding
                         with filed values
   -s name value, --set name value
@@ -57,6 +58,17 @@ $ j2render --ctx examples/context.yml examples/list.md.j2 > list.md
 ```
 
 
+```bash
+$ export foo="fooo"
+$ export bar='baar'
+$ ./j2render.py --env --filters=examples/customfilter.py examples/customfilter.j2 
+This is a template that renders the value of two context variables,
+`foo' and `bar', but runs custom filters on it :
+
+* foo: testfooo
+* bar: baartest
+```
+
+
 ## TODO
 
-* Load custom filter modules?
