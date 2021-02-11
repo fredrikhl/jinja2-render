@@ -2,8 +2,6 @@
 # encoding: utf-8
 """ Render a Jinja2 template. """
 
-from __future__ import print_function, unicode_literals
-
 import argparse
 import logging
 import importlib
@@ -130,7 +128,7 @@ def make_parser():
 
 def main(args=None):
     args = make_parser().parse_args(args)
-
+    template_str = args.template.read()
     setup_logging(quiet=args.quiet, verbose=args.verbose)
     logger.debug("args: {0}".format(repr(args)))
 
@@ -169,16 +167,13 @@ def main(args=None):
     for filename in args.filters:
         path = filename.split('/')
         if '.py' in path[-1][-3:]:
-            modpath=path[:-1]
+            modpath = path[:-1]
             modpath.append(path[-1][:-3])
-            importpath= '.'.join(modpath)
+            importpath = '.'.join(modpath)
             customfilter = importlib.import_module(importpath)
             for fname, ffunct in inspect.getmembers(customfilter, inspect.isfunction):
                 environment.filters[fname] = ffunct
-    try:
-        template_str = args.template.read().decode(encoding)
-    except AttributeError: 
-        template_str = args.template.read()
+
     template = environment.from_string(template_str)
     print(template.render(**context))
 
