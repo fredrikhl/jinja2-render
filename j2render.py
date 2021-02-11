@@ -175,8 +175,11 @@ def main(args=None):
             customfilter = importlib.import_module(importpath)
             for fname, ffunct in inspect.getmembers(customfilter, inspect.isfunction):
                 environment.filters[fname] = ffunct
-
-    template = environment.from_string(args.template.read().decode(encoding))
+    try: data = data.decode('...') 
+        template_str = args.template.read().decode(encoding)
+    except AttributeError: 
+        template_str = args.template.read()
+    template = environment.from_string(template_str)
     print(template.render(**context))
 
 
