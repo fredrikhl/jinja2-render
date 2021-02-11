@@ -175,7 +175,7 @@ def main(args=None):
             customfilter = importlib.import_module(importpath)
             for fname, ffunct in inspect.getmembers(customfilter, inspect.isfunction):
                 environment.filters[fname] = ffunct
-    try: data = data.decode('...') 
+    try:
         template_str = args.template.read().decode(encoding)
     except AttributeError: 
         template_str = args.template.read()
