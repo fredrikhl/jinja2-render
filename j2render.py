@@ -2,10 +2,10 @@
 # encoding: utf-8
 """ Render a Jinja2 template. """
 
-from __future__ import print_function, unicode_literals
-
 import argparse
 import logging
+import importlib
+import inspect
 import os.path
 import signal
 import stat
@@ -87,6 +87,12 @@ def make_parser():
         metavar='FILE',
         help="File(s) with context variables")
     parser.add_argument(
+        '--filters',
+        action='append',
+        default=[],
+        metavar='FILE',
+        help="File(s) with custom filters")
+    parser.add_argument(
         '-s', '--set',
         dest='assign',
         action='append',
@@ -122,7 +128,7 @@ def make_parser():
 
 def main(args=None):
     args = make_parser().parse_args(args)
-
+    template_str = args.template.read()
     setup_logging(quiet=args.quiet, verbose=args.verbose)
     logger.debug("args: {0}".format(repr(args)))
 
@@ -157,7 +163,18 @@ def main(args=None):
 
     environment = Environment(loader=template_loader)
 
-    template = environment.from_string(args.template.read().decode(encoding))
+    # import custom filters
+    for filename in args.filters:
+        path = filename.split('/')
+        if '.py' in path[-1][-3:]:
+            modpath = path[:-1]
+            modpath.append(path[-1][:-3])
+            importpath = '.'.join(modpath)
+            customfilter = importlib.import_module(importpath)
+            for fname, ffunct in inspect.getmembers(customfilter, inspect.isfunction):
+                environment.filters[fname] = ffunct
+
+    template = environment.from_string(template_str)
     print(template.render(**context))
 
 
