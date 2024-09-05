@@ -1,24 +1,22 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """ Render a Jinja2 template. """
-
-from __future__ import print_function, unicode_literals
-
+from __future__ import (
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
 import argparse
 import logging
-import os.path
+import os
 import signal
 import stat
 import sys
-from jinja2 import Environment, FileSystemLoader
-from pkg_resources import get_distribution, DistributionNotFound
 
-try:
-    __version__ = get_distribution('j2render').version
-except DistributionNotFound:
-    # TODO: Or `pass`, e.g. attribute is not set?
-    # TODO: Or dummy value, e.g. '0.0'
-    __version__ = None
+from jinja2 import Environment, FileSystemLoader
+
+__version__ = "1.4.0"
 
 DEFAULT_ENCODING = 'utf-8'
 
@@ -30,7 +28,7 @@ logger = logging.getLogger(__name__)
 def load_yaml(filename):
     import yaml
     with open(filename) as f:
-        return yaml.load(f)
+        return yaml.safe_load(f)
 
 
 def load_json(filename):
@@ -71,7 +69,8 @@ def make_parser():
     parser.add_argument(
         '--version',
         action='version',
-        version=__version__)
+        version=__version__,
+    )
     parser.add_argument(
         '-d', '--dir',
         dest='dirs',
@@ -79,13 +78,15 @@ def make_parser():
         type=os.path.abspath,
         default=[],
         metavar='DIR',
-        help="Add a template directory")
+        help="Add a template directory",
+    )
     parser.add_argument(
         '--ctx',
         action='append',
         default=[],
         metavar='FILE',
-        help="File(s) with context variables")
+        help="File(s) with context variables",
+    )
     parser.add_argument(
         '-s', '--set',
         dest='assign',
@@ -93,30 +94,33 @@ def make_parser():
         default=[],
         nargs=2,
         metavar=('name', 'value'),
-        help="Set context variable")
+        help="Set context variable",
+    )
     parser.add_argument(
         '-v', '--verbose',
         action='store_true',
         default=False,
-        help="Get more verbose log output on stderr")
+        help="Get more verbose log output on stderr",
+    )
     parser.add_argument(
         '--env',
         action='store_true',
         default=False,
-        help="use OS env vars as setter for values before overriding with filed values")
+        help="Set context variable defaults from envvars",
+    )
     parser.add_argument(
         '-q', '--quiet',
         action='store_true',
         default=False,
-        help="Suppress all log messages")
+        help="Suppress all log messages",
+    )
     parser.add_argument(
-        '-e', '--encoding',
-        default=None)
-    parser.add_argument('template',
-                        nargs='?',
-                        type=argparse.FileType(mode='r'),
-                        default=sys.stdin,
-                        help="Template file to render")
+        'template',
+        nargs='?',
+        type=argparse.FileType(mode='r'),
+        default=sys.stdin,
+        help="Template file to render",
+    )
     return parser
 
 
@@ -152,12 +156,9 @@ def main(args=None):
     logger.info("paths: {0}".format(repr(args.dirs)))
     template_loader = FileSystemLoader(args.dirs)
 
-    encoding = args.encoding or args.template.encoding or DEFAULT_ENCODING
-    logger.info("encoding: {0}".format(repr(encoding)))
-
     environment = Environment(loader=template_loader)
 
-    template = environment.from_string(args.template.read().decode(encoding))
+    template = environment.from_string(args.template.read())
     print(template.render(**context))
 
 
