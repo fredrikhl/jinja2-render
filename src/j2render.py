@@ -16,7 +16,7 @@ import sys
 
 from jinja2 import Environment, FileSystemLoader
 
-__version__ = "1.4.0"
+__version__ = "1.5.0"
 
 DEFAULT_ENCODING = 'utf-8'
 
